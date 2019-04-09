@@ -13,14 +13,14 @@ milestones: [5,15]
 
 parallel: False
 data:
-  train_path: gigaword/dev/train.src.small.txt
-  val_path:   gigaword/dev/valid.src.small.txt
+  train_path: gigaword/train.article.txt
+  val_path:   gigaword/valid.article.filter.txt
   seq_len: 60
   stateful: False
   sos: True
   oovs: 10
 vocab:
-  vocab_path: gigaword/train.article.vocab.10K.txt
+  vocab_path: gigaword/train.article.vocab.15K.txt
   size: 15000
   subword: False
   subword_path: xxxxxxxxxxxxxx
