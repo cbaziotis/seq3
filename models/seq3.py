@@ -16,8 +16,8 @@ from models.seq3_utils import compute_dataset_idf
 from modules.data.collates import Seq2SeqCollate, Seq2SeqOOVCollate
 from modules.data.datasets import AEDataset
 from modules.data.samplers import BucketBatchSampler
+from modules.models import Seq2Seq2Seq
 from modules.modules import SeqReader
-from modules.seq3_compressor import Seq2Seq2Seq
 from mylogger.attention import samples2html
 from mylogger.experiment import Experiment
 from sys_config import EXP_DIR, EMBS_PATH, MODEL_CNF_DIR
@@ -40,7 +40,7 @@ opts, config = seq2seq2seq_options(default_config)
 ####################################################################
 vocab = None
 
-if config["model"]["grounding_loss"] and config["prior"] is not None:
+if config["model"]["prior_loss"] and config["prior"] is not None:
     print("Loading Oracle LM ...")
     oracle_cp = load_checkpoint(config["prior"])
     vocab = oracle_cp["vocab"]
@@ -127,7 +127,7 @@ if "embeddings" in config["vocab"] and config["vocab"]["embeddings"]:
     if config["model"]["embed_masked"] and config["model"]["embed_trainable"]:
         model.set_embedding_gradient_mask(emb_mask)
 
-if config["model"]["centroid_loss"] and config["model"]["centroid_idf"]:
+if config["model"]["topic_loss"] and config["model"]["topic_idf"]:
     print("Computing IDF values...")
     idf = compute_dataset_idf(train_data, train_data.vocab.tok2id)
     # idf[vocab.tok2id[vocab.SOS]] = 1  # neutralize padding token
@@ -207,9 +207,9 @@ exp = Experiment(opts.name, config, src_dirs=opts.source, output_dir=EXP_DIR)
 step_tags = []
 step_tags.append("REC")
 
-if config["model"]["grounding_loss"] and config["prior"] is not None:
+if config["model"]["prior_loss"] and config["prior"] is not None:
     step_tags.append("PRIOR")
-if config["model"]["centroid_loss"]:
+if config["model"]["topic_loss"]:
     step_tags.append("TOPIC")
 if config["model"]["length_loss"]:
     step_tags.append("LENGTH")
@@ -384,11 +384,11 @@ loss_ids = {}
 
 loss_weights = [config["model"]["loss_weight_reconstruction"]]
 loss_ids["reconstruction"] = len(loss_weights) - 1
-if config["model"]["grounding_loss"] and config["prior"] is not None:
-    loss_weights.append(config["model"]["loss_weight_grounding"])
+if config["model"]["prior_loss"] and config["prior"] is not None:
+    loss_weights.append(config["model"]["loss_weight_prior"])
     loss_ids["prior"] = len(loss_weights) - 1
-if config["model"]["centroid_loss"]:
-    loss_weights.append(config["model"]["loss_weight_centroid"])
+if config["model"]["topic_loss"]:
+    loss_weights.append(config["model"]["loss_weight_topic"])
     loss_ids["topic"] = len(loss_weights) - 1
 if config["model"]["length_loss"]:
     loss_weights.append(config["model"]["loss_weight_length"])

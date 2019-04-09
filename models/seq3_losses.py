@@ -6,7 +6,7 @@ from modules.helpers import sequence_mask
 
 def _kl_div(inp_logits, trg_logits, lengths, tau=1):
     """
-    Compute the grounding loss using a pretrained "oracle" LM.
+    Compute the prior loss using a pretrained "oracle" LM.
     The loss is computed using the produced posteriors over the vocabulary
     produced by a generator and the posteriors of the "oracle" LM.
 

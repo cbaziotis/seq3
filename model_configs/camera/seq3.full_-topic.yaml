@@ -1,116 +1,126 @@
-checkpoint_interval: 5000
-eval_interval: 500
-log_interval: 50
-batch_size: 128
-epochs: 5
+checkpoint_interval: 5000 # how often (batches) to save a checkpoint
+eval_interval: 500        # how often (batches) to evaluate the model on the dev set
+log_interval: 50          # how often (batches) to log the training process to console
+batch_size: 128           # number of epochs
+epochs: 5                 # number of epochs
 num_workers: 0
-pack: True
-plot_norms: True
 
-lr: 0.0003
-weight_decay: 0.
+plot_norms: True  # Plot the gradient norms of each loss wrt to the compressor
 
-prior: lm_prior
+lr: 0.0003        # Learning rate of the optimizer
+weight_decay: 0.  # Weight decay value of the optimizer
+
+# The checkpoint of the pretrained LM to be used as prior.
+# Use only the prefix of the file (without .pt)
+prior: lm_giga_articles_all_10K
 
 data:
-  train_path: gigaword/train.article.txt
-  val_path:   gigaword/dev/valid.article.filter.4K.txt
-  ref_path:   gigaword/dev/valid.title.filter.4K.txt
-  seq_len: 50
-  oovs: 10
-  swaps: 0.0
+  train_path: gigaword/train.article.txt # path to the training data (only source!!!)
+  val_path:   gigaword/dev/valid.article.filter.4K.txt  # path to the source validation data
+  ref_path:   gigaword/dev/valid.title.filter.4K.txt    # path to the target validation data
+
+  seq_len: 50   # maximum length of source texts
+  oovs: 10      # number of special OOV tokens (www.aclweb.org/anthology/K18-1040)
+  swaps: 0.0    # percentage of local token swaps to the source text
+
 vocab:
-  embeddings: glove.6B.100d.txt
-  embeddings_dim: 100
-  size: 15000
+  embeddings: glove.6B.100d.txt # pretrained word embeddings file
+  embeddings_dim: 100           # pretrained word embeddings dimensionality
+  size: 15000                   # size of the vocabulary. Top-N frequent words.
+
 model:
-  clip: 1
-  debug: True
-  pack: True
+  clip: 1       # value of clipping the norms of the gradients
+  pack: True    # use packed_sequences
 
   ################################################
   # LOSSES
   ################################################
 
+  # Annealing: If you want to anneal the value of a hyper-parameter,
+  # you can do so, by replacing the value with a list: [from, to].
+  # For example, to anneal the value of the weight of the prior:
+  # loss_weight_prior: [0.001, 0.5]
+  # Note that the starting value cannot be zero.
+
+
   #------------------------------------
   # Reconstruction
   #------------------------------------
-  loss_weight_reconstruction: 1
+  loss_weight_reconstruction: 1   # weight of the reconstruction loss - λ_R
 
   #------------------------------------
   # Prior
   #------------------------------------
-  grounding_loss: True
-  grounding_loss_tau: 1
-  loss_weight_grounding: 0.1 # [0.01 , 0.2]
+  prior_loss: True                # enable/disable the prior loss
+  loss_weight_prior: 0.1          # weight of the prior loss - λ_P
 
   #------------------------------------
   # Topic
   #------------------------------------
-  centroid_loss: False
-  loss_weight_centroid: 1 # [1, 0.1]
-  centroid_idf: True
-  centroid_distance: cosine # cosine, euclidean
+  topic_loss: False               # enable/disable the prior loss
+  loss_weight_topic: 1            # weight of the prior loss - λ_T
+  topic_idf: True                 # weight the input embeddings by their IDF
+  topic_distance: cosine          # distance metric for topic loss. Options: cosine, euclidean
 
   #------------------------------------
   # Length
   #------------------------------------
-  length_loss: True
-  loss_weight_length: 0.01
+  length_loss: True               # enable/disable the length loss
+  loss_weight_length: 0.01        # weight of the prior loss - λ_L
 
 
   ################################################
   # SUMMARY LENGTHS
   ################################################
-  min_ratio: 0.4
-  max_ratio: 0.6
-  min_length: 6
-  max_length: 20
-  test_min_ratio: 0.5
-  test_max_ratio: 0.51
-  test_min_length: 6
-  test_max_length: 20
+  min_ratio: 0.4          # min % of the sampled summary lengths
+  max_ratio: 0.6          # max % of the sampled summary lengths
+  min_length: 6           # absolute min length (words) of the sampled summary length
+  max_length: 20          # absolute max length (words) of the sampled summary length
+  test_min_ratio: 0.5     # same as above but for inference
+  test_max_ratio: 0.51    # same as above but for inference
+  test_min_length: 6      # same as above but for inference
+  test_max_length: 20     # same as above but for inference
 
   ################################################
   # PARAMETER SHARING
   ################################################
-  tie_decoder_outputs: True
-  tie_embedding_outputs: True
-  tie_embedding: True
-  tie_decoders: False
-  tie_encoders: True
+  tie_decoder_outputs: True     # tie the output layers of both decoders (projections to vocab)
+  tie_embedding_outputs: True   # tie the embedding and output layers of both decoders
+  tie_embedding: True           # tie all the embedding layers together
+  tie_decoders: False           # tie the decoders of the compressor and reconstructor
+  tie_encoders: True            # tie the encoders of the compressor and reconstructor
 
   ################################################
   # INIT DECODER
   ################################################
-  length_control: True
-  bridge_hidden: True
-  bridge_non_linearity: tanh
+  length_control: True          # If true, use the countdown parameter for the decoders,
+                                # as well as the target length-aware initialization for each decoder
+  bridge_hidden: True           # use a bridge layer (hidden) between the last layer of the encoder and the initial state of the decoder
+  bridge_non_linearity: tanh    # apply a non-linearity to the bridge layer. Options: tanh, relu
 
-  emb_size: 100
-  embed_noise: 0.
-  embed_dropout: 0.0
-  embed_trainable: True
-  embed_masked: False
-  layer_norm: True
-  enc_token_dropout: 0.0
-  dec_token_dropout: 0.5
-  enc_rnn_size: 300
-  dec_rnn_size: 300
-  rnn_layers: 2
-  rnn_dropout: 0.0
-  rnn_bidirectional: True
-  attention: True
-  attention_fn: general
-  attention_coverage: False
-  input_feeding: True
-  input_feeding_learnt: True
-  out_non_linearity: tanh
+  emb_size: 100               # the size of the embedding layer(s)
+  embed_dropout: 0.0          # dropout probability for the embedding layer(s)
+  embed_trainable: True       # Finetune the embeddings
+  embed_masked: False         # Finetune the only the words not included in the pretrained embeddings.
+  layer_norm: True            # Apply layer normalization to the outputs of the decoders
+  enc_token_dropout: 0.0      # % of words to drop from the input
+  dec_token_dropout: 0.5      # % of words to drop from the reconstruction
+  enc_rnn_size: 300           # the size of the encoder(s)
+  dec_rnn_size: 300           # the size of the decoder(s)
+  rnn_layers: 2               # number of layers for encoders and decoders
+  rnn_dropout: 0.0            # dropout probability for the outputs of each RNN
+  rnn_bidirectional: True     # Use bidirectional encoder(s)
+  attention: True             # Use attentional seq2seq. False not implemented!
+  attention_fn: general       # The attention function. Options: general, additive, concat
+  attention_coverage: False   # Include a coverage vector to the attention mechanism
+  input_feeding: True         # Use input feeding (Luong et. al. 2015)
+  input_feeding_learnt: True  # Learn the first value of the input feed
+  out_non_linearity: tanh     # Apply a non-linearity to the output vector (before projection to vocab)
 
-  sampling: 0.0
-  top: False
-  hard: True
-  gumbel: True
-  tau: 0.5
-  learn_tau: False
-  tau_0: 0.5
+  sampling: 0.0     # Probability of schedule-sampling to the reconstructor
+  top: False        # Use argmax for sampling in the latent sequence. True not implemented!
+  hard: True        # Use Straight-Through, i.e., discretize the output distributions in the forwards pass
+  gumbel: True      # Use Gumbel-Softmax instead of softmax in the latent sequence
+  tau: 0.5          # Temperature of the distributions in the latent sequence
+  learn_tau: False  # Learn the value of the temperature, as function of the output of the decoder(s)
+  tau_0: 0.5        # Hyper-parameter that controls the upper-bound of the temperature.

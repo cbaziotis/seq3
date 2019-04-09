@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 from modules.data.collates import Seq2SeqOOVCollate
 from modules.data.datasets import AEDataset
-from modules.seq3_compressor import Seq2Seq2Seq
+from modules.models import Seq2Seq2Seq
 from utils.training import load_checkpoint
 
 

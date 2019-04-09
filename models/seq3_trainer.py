@@ -16,7 +16,6 @@ class Seq3Trainer(Trainer):
         self.oracle = kwargs.get("oracle", None)
         self.top = self.config["model"]["top"]
         self.hard = self.config["model"]["hard"]
-        self.lm_loss_tau = self.config["model"].get("grounding_loss_tau", 1)
         self.sampling = self.anneal_init(self.config["model"]["sampling"])
         self.tau = self.anneal_init(self.config["model"]["tau"])
         self.len_min_rt = self.anneal_init(self.config["model"]["min_ratio"])
@@ -35,13 +34,13 @@ class Seq3Trainer(Trainer):
                                  reconstruct_loss,
                                  "rnn"))
 
-        if self.config["model"]["centroid_loss"]:
+        if self.config["model"]["topic_loss"]:
             c_grad_norm.append(
                 module_grad_wrt_loss(self.optimizers, self.model.compressor,
                                      topic_loss,
                                      "rnn"))
 
-        if self.config["model"]["grounding_loss"] and self.oracle is not None:
+        if self.config["model"]["prior_loss"] and self.oracle is not None:
             c_grad_norm.append(
                 module_grad_wrt_loss(self.optimizers, self.model.compressor,
                                      prior_loss,
@@ -65,7 +64,7 @@ class Seq3Trainer(Trainer):
         enc_embs = self.model.inp_encoder.embed(inp)
         dec_embs = self.model.compressor.embed.expectation(dec1[3])
 
-        if self.config["model"]["centroid_idf"]:
+        if self.config["model"]["topic_idf"]:
             enc1_energies = self.model.idf(inp)
             # dec1_energies = expected_vecs(dec1[3], self.model.idf.weight)
 
@@ -77,7 +76,7 @@ class Seq3Trainer(Trainer):
             x_emb, att_x = avg_vectors(enc_embs, enc_mask)
             y_emb, att_y = avg_vectors(dec_embs, dec_mask)
 
-        distance = self.config["model"]["centroid_distance"]
+        distance = self.config["model"]["topic_distance"]
         loss = pairwise_loss(x_emb, y_emb, distance)
 
         return loss, (att_x, att_y)
@@ -112,8 +111,7 @@ class Seq3Trainer(Trainer):
 
         prior_loss, prior_loss_time = _kl_div(logits_dec1,
                                               logits_oracle,
-                                              latent_lengths,
-                                              tau=self.lm_loss_tau)
+                                              latent_lengths)
 
         return prior_loss, prior_loss_time, logits_oracle
 
@@ -159,7 +157,7 @@ class Seq3Trainer(Trainer):
         # --------------------------------------------------------------
         # 2 - PRIOR
         # --------------------------------------------------------------
-        if self.config["model"]["grounding_loss"] and self.oracle is not None:
+        if self.config["model"]["prior_loss"] and self.oracle is not None:
             prior_loss, p_loss_i, p_logits = self._prior_loss(outputs,
                                                               latent_lengths)
             batch_outputs["prior"] = p_loss_i, p_logits
@@ -170,7 +168,7 @@ class Seq3Trainer(Trainer):
         # --------------------------------------------------------------
         # 3 - TOPIC
         # --------------------------------------------------------------
-        if self.config["model"]["centroid_loss"]:
+        if self.config["model"]["topic_loss"]:
             topic_loss, attentions = self._topic_loss(inp_x, dec1,
                                                       x_lengths,
                                                       latent_lengths)
