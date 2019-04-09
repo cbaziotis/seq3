@@ -30,8 +30,7 @@ from utils.transfer import freeze_module
 ####################################################################
 # Settings
 ####################################################################
-default_config = os.path.join(MODEL_CNF_DIR, "seq3.yaml")
-opts, config = seq2seq2seq_options(default_config)
+opts, config = seq2seq2seq_options()
 
 ####################################################################
 #

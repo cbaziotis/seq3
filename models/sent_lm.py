@@ -22,8 +22,7 @@ from utils.training import load_checkpoint
 ####################################################################
 # SETTINGS
 ####################################################################
-default_config = os.path.join(MODEL_CNF_DIR, "lm_prior.yaml")
-opts, config = train_options(default_config)
+opts, config = train_options()
 
 ####################################################################
 # Data Loading and Preprocessing
