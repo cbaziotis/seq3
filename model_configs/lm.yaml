@@ -1,0 +1,40 @@
+checkpoint_interval: 0
+log_interval: 1
+batch_size: 64
+epochs: 50
+
+lr: 0.001
+scheduler: step
+step_size: 10
+eta_min: 0.0001
+weight_decay: 0.0
+gamma: 0.5
+milestones: [5,15]
+
+parallel: False
+data:
+  train_path: gigaword/dev/train.src.small.txt
+  val_path:   gigaword/dev/valid.src.small.txt
+  seq_len: 60     # maximum length of texts (in words)
+  stateful: False # Leave it to False. True is used for document level language modeling.
+  sos: True       # Add a Start-of-SequenceSOS token
+  oovs: 10        # number of special OOV tokens (www.aclweb.org/anthology/K18-1040)
+                  # the LM is trained with the same trick, in order to be able to compute meaningful KL in the compression task
+vocab:
+  vocab_path:
+  size: 10000
+  subword: False
+  subword_path:
+model:
+  emb_size: 100       # the size of the embedding layer(s)
+  embed_noise: 0.0    # additive gaussian noise with given sigma
+  embed_dropout: 0.0  # dropout probability for the embedding layer(s)
+  rnn_size: 512       # size of the RNN
+  rnn_layers: 1       # number of RNN layers
+  rnn_dropout: 0.2    # dropout probability for outputs of the RNN
+  decode: True        # leave it to True. It mean that the outputs of the RNN
+                      # will be projected to the vocabulary (decoded)
+  tie_weights: True   # tie the embedding and the output layer
+  countdown: True     # add a countdown input. Leave it to True
+  pack: True          # use packed_sequences
+  clip: 1             # value of clipping the norms of the gradients

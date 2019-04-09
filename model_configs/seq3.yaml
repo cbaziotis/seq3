@@ -15,7 +15,7 @@ weight_decay: 0.  # Weight decay value of the optimizer
 prior: lm_giga_articles_all_10K
 
 data:
-  train_path: gigaword/dev/valid.article.filter.10K.txt # path to the training data (only source!!!)
+  train_path: gigaword/dev/train.src.small.txt          # path to the training data (only source!!!)
   val_path:   gigaword/dev/valid.article.filter.4K.txt  # path to the source validation data
   ref_path:   gigaword/dev/valid.title.filter.4K.txt    # path to the target validation data
 
@@ -106,7 +106,7 @@ model:
   dec_token_dropout: 0.5      # % of words to drop from the reconstruction
   enc_rnn_size: 300           # the size of the encoder(s)
   dec_rnn_size: 300           # the size of the decoder(s)
-  rnn_layers: 2               # number of layers for encoders and decoders
+  rnn_layers: 1               # number of layers for encoders and decoders
   rnn_dropout: 0.0            # dropout probability for the outputs of each RNN
   rnn_bidirectional: True     # Use bidirectional encoder(s)
   attention: True             # Use attentional seq2seq. False not implemented!

@@ -51,14 +51,20 @@ Extract the data in `datasets/gigaword/` and organize the files as:
 ```
 datasets
 └── gigaword
-    └── SEASS
-        └── dev/
-        └── test1951/
-        └── train.article.txt
-        └── train.title.txt
-        └── valid.article.filter.txt
-        └── valid.title.filter.txt
+      └── dev/
+      └── test1951/
+      └── train.article.txt
+      └── train.title.txt
+      └── valid.article.filter.txt
+      └── valid.title.filter.txt
 ```
+
+Included in `datasets/gigaword/dev/` you will find a small subset of the source 
+(the target summaries are never used) training data, i.e., the articles,
+which were used for prototyping, as well as a dev set with 
+4K parallel sentences for evaluation.
+
+
 You can also use your own data, as long as the source and target data 
 are text files with one sentence per line.
 
@@ -81,7 +87,7 @@ although most of them are self-explanatory.
 In our experiments we trained the LM on the *source* (only) sentences 
 of the Gigaword dataset.
 ```
-python models/sent_lm.py --config model_configs/lm_prior.yaml 
+python models/sent_lm.py --config model_configs/camera/lm_prior.yaml 
 ```
 After the training ends, the checkpoint with the best validation loss 
 will be saved under the directory `checkpoints/`.
@@ -93,5 +99,10 @@ While you will still be able to train the model without it,
 the LM prior loss will be disabled.
 
 ```
-python models/seq3.py --config model_configs/seq3.yaml 
+python models/seq3.py --config model_configs/camera/seq3.full.yaml 
 ```
+
+**Prototyping**: You can experiment with SEQ<sup>3</sup> without downloading
+the full training data, by training with the configs 
+`model_configs/lm.yaml` and `model_configs/seq3.yaml`, respectively,
+which use the small subset of the training data.
