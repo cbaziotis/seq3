@@ -1,7 +1,7 @@
 This repository contains source code for the ΝΑACL 2019 paper 
 "SEQ^3: Differentiable Sequence-to-Sequence-to-Sequence Autoencoder 
 for Unsupervised Abstractive Sentence Compression" 
-([Paper](https://www.researchgate.net/publication/332258745_SEQ3_Differentiable_Sequence-to-Sequence-to-Sequence_Autoencoder_for_Unsupervised_Abstractive_Sentence_Compression)).
+([Paper](https://arxiv.org/abs/1904.03651)).
 
 <p align="center">
   <img src="./seq3_overview.svg" height="200">
