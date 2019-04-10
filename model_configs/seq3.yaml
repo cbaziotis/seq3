@@ -12,7 +12,7 @@ weight_decay: 0.  # Weight decay value of the optimizer
 
 # The checkpoint of the pretrained LM to be used as prior.
 # Use only the prefix of the file (without .pt)
-prior: lm_giga_articles_all_10K
+prior: lm
 
 data:
   train_path: gigaword/dev/train.src.small.txt          # path to the training data (only source!!!)

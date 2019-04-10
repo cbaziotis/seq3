@@ -36,6 +36,18 @@ to distill important information from the input.
  
  
 ### Install Requirements
+
+**Create Environment (Optional)**: Ideally, you should create an environment 
+for the project.
+
+```
+conda create -n seq3 python=3
+conda activate seq3
+```
+
+Install PyTorch `1.0` with the desired Cuda version if you want to use the GPU
+and then the rest of the requirements:
+
 ```
 pip install -r requirements.txt
 ```
@@ -106,3 +118,14 @@ python models/seq3.py --config model_configs/camera/seq3.full.yaml
 the full training data, by training with the configs 
 `model_configs/lm.yaml` and `model_configs/seq3.yaml`, respectively,
 which use the small subset of the training data.
+
+
+
+### Troubleshooting
+
+ - If you get the error `ModuleNotFoundError: No module named 'X'`, 
+ then add the directory `X` to your PYTHONPATH in your `~/.bashrc`, or simply:
+
+    ```
+    export PYTHONPATH='.'
+    ```
