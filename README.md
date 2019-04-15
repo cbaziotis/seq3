@@ -27,6 +27,18 @@ to distill important information from the input.
 </p>
 
 
+##### Reference
+```
+@inproceedings{baziotis2019naacl,
+    title = {\textsc{SEQ}\textsuperscript{3}: Differentiable Sequence-to-Sequence-to-Sequence Autoencoder for Unsupervised Abstractive Sentence Compression},
+    author = {Christos Baziotis and Ion Androutsopoulos and Ioannis Konstas and Alexandros Potamianos},
+    booktitle = {Proceedings of the Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL:HLT)},
+    address = {Minneapolis, USA},
+    month = {June},
+    url = {https://arxiv.org/abs/1904.03651},
+    year = {2019}
+}
+```
 
 # Prerequisites
 
