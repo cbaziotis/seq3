@@ -1,4 +1,4 @@
-numpy==1.16.2
+numpy==1.22.0
 matplotlib==3.0.3
 rouge==0.3.1
 pymongo==3.7.2
